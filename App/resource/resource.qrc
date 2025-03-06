@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>start/startlogo.txt</file>
+        <file>start/start_ZH.html</file>
+        <file>start/start_EN.html</file>
+        <file>image/titleIcon.png</file>
+        <file>image/pinned#000000.svg</file>
+        <file>image/checked#000000.svg</file>
+        <file>image/correct#69b779.svg</file>
+        <file>image/incorrect#d0021b.svg</file>
+        <file>ttf/JetBrainsMonoNL-SemiBold.ttf</file>
+        <file>translations/en_US.qm</file>
+    </qresource>
+</RCC>
