@@ -6,7 +6,6 @@
 #include "xymodem.h"
 #include <QScrollBar>
 #include <QPropertyAnimation>
-#include <qobject.h>
 
 Widget::Widget(QWidget *parent) : QWidget(parent), m_ui(new Ui::Widget) {
 
@@ -510,11 +509,15 @@ void Widget::insertMessage(const QString symbol, const QByteArray &data) {
     int current = m_ui->messageBrowser->verticalScrollBar()->value();
 
     QString packetHead;
-    if(m_ui->messageBrowser->m_isTimestamp) {
+    if (m_ui->messageBrowser->m_isEcho && m_ui->messageBrowser->m_isTimestamp) {
         packetHead = QStringLiteral("[%1|%2]:")
-            .arg(symbol).arg(QTime::currentTime().toString("hh:mm:ss.zzz"));
-    } else {
+                        .arg(symbol)
+                        .arg(QTime::currentTime().toString("hh:mm:ss.zzz"));
+    } else if (m_ui->messageBrowser->m_isEcho) {
         packetHead = QStringLiteral("[%1]:").arg(symbol);
+    } else if (m_ui->messageBrowser->m_isTimestamp) {
+        packetHead = QStringLiteral("[%1]:")
+            .arg(QTime::currentTime().toString("hh:mm:ss.zzz"));
     }
 
     QString rxData;
@@ -555,12 +558,17 @@ void Widget::insertMessage(const QString symbol, const QByteArray &data) {
     }
 
     QString color((symbol == "Tx") ? m_txColor.name() : m_rxColor.name());
-    m_ui->messageBrowser->append(QStringLiteral("<span style = 'color:%1;'>%2</span>")
-                                                .arg(color).arg(packetHead));
+    if(!packetHead.isEmpty()) {
+        m_ui->messageBrowser->append(QStringLiteral("<span style = 'color:%1;'>%2</span>")
+                                                        .arg(color).arg(packetHead));
+    }
     m_messageFormat.setForeground(m_textColor);
     m_messageCursor.insertText(rxData, m_messageFormat);
-    m_messageCursor.insertHtml(QStringLiteral("<span style = 'color:%1;'>%2</span>")
-                                                .arg(color).arg(packetTail));
+    if(!packetTail.isEmpty()) {
+        m_messageCursor.insertHtml(QStringLiteral("<span style = 'color:%1;'>%2</span>")
+                                                        .arg(color).arg(packetTail));
+    }
+
 
     if(current == max) {
         max = m_ui->messageBrowser->verticalScrollBar()->maximum();
